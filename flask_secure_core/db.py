@@ -1,0 +1,1 @@
+# Datenbank-Abstraktion (SQLite/PostgreSQL/MySQL)

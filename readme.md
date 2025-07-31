@@ -1,5 +1,9 @@
 # flask-secure-core
 
+> ⚠️ **Hinweis:** Dieses Projekt befindet sich aktuell in der **Entwicklungsphase**.  
+> Viele Funktionen sind noch nicht vollständig implementiert und können sich ändern.  
+> Die Nutzung erfolgt auf eigene Verantwortung. Feedback und Mitarbeit sind willkommen!
+
 **`flask-secure-core`** ist eine modulare Flask-Library zur schnellen Integration von User-Login, Rechteverwaltung und Admin-UI in deine Flask-Projekte.
 
 ---

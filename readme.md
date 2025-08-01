@@ -123,6 +123,7 @@ Antworten im JSON-Format – ideal für SPAs oder mobile Clients.
 - Zwei-Faktor-Authentifizierung (TOTP, via App)s
 - Benutzer-Aktivitätsprotokoll (Audit Log)
 - SSO-Unterstützung
+- JWT-Tokens anstelle von session cookies
 
 ---
 

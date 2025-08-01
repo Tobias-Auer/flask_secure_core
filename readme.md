@@ -120,8 +120,7 @@ Antworten im JSON-Format – ideal für SPAs oder mobile Clients.
 
 ## 📦 Roadmap (geplant)
 
-- Zwei-Faktor-Authentifizierung (TOTP, via App)
-- Gruppenbasierte Rechteverwaltung
+- Zwei-Faktor-Authentifizierung (TOTP, via App)s
 - Benutzer-Aktivitätsprotokoll (Audit Log)
 - SSO-Unterstützung
 

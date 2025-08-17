@@ -15,9 +15,10 @@ class AuthDecoratorHelperFunctions:
         if not g.get("db_connection", None):
             self.logger.error("No database connection available.")
             abort(500)
+            
     def create_db_connection(self):
         if "db_connection" not in g:
-            g.db_connection = self.db_handler.get_db_connection()
+            g.db_connection = self.db_handler.create_db_connection()
         return g.db_connection
         
     def validate_session(self):

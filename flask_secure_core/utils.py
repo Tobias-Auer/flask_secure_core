@@ -4,10 +4,14 @@
 This module contains utility functions for flask_secure_core.
 """
 from flask import make_response, redirect, abort, g
+import colorlogx.logger as colorlogx
+
+logger = colorlogx.get_logger("utils")
+
 
 class AuthDecoratorHelperFunctions:
     def __init__(self, logger, db_handler):
-        self.logger = logger
+        logger = logger
         self.db_handler = db_handler
 
     def before_processing(self):
@@ -38,15 +42,15 @@ class AuthDecoratorHelperFunctions:
         """
         
         user_access_level = self.get_permission_level(g.get("user_uuid", None))
-        self.logger.debug(f"User {g.get('user_uuid', None)} has access permissions: {user_access_level}")
-        self.logger.debug(f"Required permission level: {required_permission_level}")
+        logger.debug(f"User {g.get('user_uuid', None)} has access permissions: {user_access_level}")
+        logger.debug(f"Required permission level: {required_permission_level}")
         return user_access_level <= required_permission_level
 
     def get_permission_level(self, user_id):
         if "user_access_level" not in g:
             g.user_access_level = self.db_handler.get_access_permissions(user_id)
             if g.user_access_level is None:
-                self.logger.error(f"Database error!\nCould not determine access level for user {user_id}")
+                logger.error(f"Database error!\nCould not determine access level for user {user_id}")
                 abort(500)
         return g.user_access_level
 
@@ -59,7 +63,7 @@ class AuthDecoratorHelperFunctions:
         :param url: The URL that was requested.
         :return: Redirect response to the access denied page.
         """
-        self.logger.debug(f"Access denied for {request_path} with context {context} for user {g.get('user_uuid', None)}")
+        logger.debug(f"Access denied for {request_path} with context {context} for user {g.get('user_uuid', None)}")
         match g.db_connection.preferences.get("permission_required_not_given_action"):
             case 0:
                 g.access_denied_code = 0

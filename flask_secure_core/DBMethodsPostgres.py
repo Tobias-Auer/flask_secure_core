@@ -1,0 +1,53 @@
+import colorlogx.logger as colorlogx
+import DBConnectionManagerPostgres as db_conn_manager
+import functools
+
+
+logger = colorlogx.get_logger("DBConnectionManagerPostgres")
+
+
+def db_error_handler(method):
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"Database error in {method.__name__}: {e}")
+            if self.conn:
+                self.conn.rollback()
+            raise
+    return wrapper
+
+class DBMethods:
+    def __init__(self, connection_manager):
+        self.connection_manager = connection_manager
+        self.conn = self.connection_manager.get_db_conn()
+        self.cursor = self.conn.cursor()
+
+    def get_access_permissions(self, user_id):
+        ...
+
+    def close(self):
+        if self.cursor:
+            self.cursor.close()
+            self.cursor = None
+        if self.conn:
+            self.connection_manager.release_connection(self.conn)
+            self.conn = None
+        if self.connection_manager:
+            self.connection_manager = None
+
+
+"""
+klasse instanz machen
+-> conn bekommen
+---> cursor bekommen
+---> cursor speichern
+klasse instanz bekommt methode aufruf
+-> cursor wird benutzt
+klasse instanz bekommt methode aufruf
+-> cursor wird benutzt
+klasse instanz wird geschlossen
+-> cursor wird geschlossen
+-> conn wird zurückgegeben
+"""

@@ -15,15 +15,14 @@ class AuthDecoratorHelperFunctions:
         self.db_handler = db_handler
 
     def before_processing(self):
-        self.create_db_connection()
-        if not g.get("db_connection", None):
-            self.logger.error("No database connection available.")
+        self.init_db_cursor()
+        if not g.get("db_cursor", None):
+            logger.error("No database connection available.")
             abort(500)
             
-    def create_db_connection(self):
-        if "db_connection" not in g:
-            g.db_connection = self.db_handler.create_db_connection()
-        return g.db_connection
+    def init_db_cursor(self):
+        if "db_cursor" not in g:
+            g.db_cursor = self.db_handler.create_db_cursor()
         
     def validate_session(self):
         """
@@ -48,13 +47,13 @@ class AuthDecoratorHelperFunctions:
 
     def get_permission_level(self, user_id):
         if "user_access_level" not in g:
-            g.user_access_level = self.db_handler.get_access_permissions(user_id)
+            g.user_access_level = self.db_handler.get_access_permissions(g.db_cursor, user_id)
             if g.user_access_level is None:
                 logger.error(f"Database error!\nCould not determine access level for user {user_id}")
                 abort(500)
         return g.user_access_level
 
-    def is_permission_sufficient(self, user_level, required_level):
+    def permission_is_sufficient(self, user_level, required_level):
         return user_level <= required_level
     
     def get_access_denied_page(self, request_path, context):

@@ -28,34 +28,20 @@ def decorate_all_db_methods(cls):
 @decorate_all_db_methods
 class DBMethods:
     def __init__(self, connection_manager):
-        self.connection_manager = connection_manager
-        self.conn = self.connection_manager.get_db_conn()
-        self.cursor = self.conn.cursor()
+        self.__connection_manager = connection_manager
+        self.__conn = self.__connection_manager.get_db_conn()
+        self.__cursor = self.__conn.cursor()
 
     def get_access_permissions(self, user_id):
         ...
 
     def close(self):
-        if self.cursor:
-            self.cursor.close()
-            self.cursor = None
-        if self.conn:
-            self.connection_manager.release_connection(self.conn)
-            self.conn = None
-        if self.connection_manager:
-            self.connection_manager = None
+        if self.__cursor:
+            self.__cursor.close()
+            self.__cursor = None
+        if self.__conn:
+            self.__connection_manager.release_connection(self.__conn)
+            self.__conn = None
+        if self.__connection_manager:
+            self.__connection_manager = None
 
-
-"""
-klasse instanz machen
--> conn bekommen
----> cursor bekommen
----> cursor speichern
-klasse instanz bekommt methode aufruf
--> cursor wird benutzt
-klasse instanz bekommt methode aufruf
--> cursor wird benutzt
-klasse instanz wird geschlossen
--> cursor wird geschlossen
--> conn wird zurückgegeben
-"""

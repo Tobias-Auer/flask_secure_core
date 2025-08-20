@@ -7,14 +7,15 @@ This module contains decorators for Flask applications to handle authentication 
 import functools
 from flask import request, g
 from utils import AuthDecoratorHelperFunctions as ADHF
+from . import get_connection_manager
 
 class AuthDecorators:
-    def __init__(self, logger, db_handler):
+    def __init__(self, logger):
         """
         :param logger: Logger object for logging.
         """
         self.logger = logger
-        self.helper = ADHF(logger, db_handler)
+        self.helper = ADHF(logger, get_connection_manager())
 
     def require_login(self):
         def inner_decorator(f):

@@ -5,7 +5,7 @@ This module contains utility functions for flask_secure_core.
 """
 from flask import make_response, redirect, abort, g
 import colorlogx.logger as colorlogx
-import DBMethodsPostgres
+from .db.DBMethodsPostgres import DBMethods as DBMethods_Postgres, Preferences as Preferences_Postgres
 
 logger = colorlogx.get_logger("utils")
 
@@ -23,8 +23,8 @@ class AuthDecoratorHelperFunctions:
             
     def init_db_obj(self):
         if "db_cursor" not in g:
-            g.db_obj = DBMethodsPostgres.DBMethods(self.connection_manager)
-            g.preferences = DBMethodsPostgres.Preferences(self.connection_manager)
+            g.db_obj = DBMethods_Postgres(self.connection_manager)
+            g.preferences = Preferences_Postgres(self.connection_manager)
             # TODO: implement a proper get preferences class
         
     def validate_session(self):

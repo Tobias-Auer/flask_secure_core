@@ -4,23 +4,21 @@
 This module contains Flask blueprints for core flask functions.
 """
 
-from flask import session, redirect, abort, request, g
+from flask import Blueprint, session, g
 
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    """
-    This function is called when the application context is torn down.
-    It can be used to clean up resources, such as closing database connections.
-    """
-    db_handler = g.pop('db_handler', None)
-    if db_handler is not None:
-        db_handler.close()
+bp = Blueprint("core", __name__)
 
-
-@app.before_request
+@bp.before_app_request
 def before_request():
-    """
-    This function is called before each request.
-    """
     g.user_uuid = session.get("user_uuid", None)
-    
+
+@bp.teardown_appcontext
+def shutdown_session(exception=None):
+    if hasattr(g, 'db_obj'):
+        g.db_obj.close()
+    if hasattr(g, 'preferences'):
+        g.preferences.close()
+
+@bp.route("/test")
+def test_route():
+    return "Test route is working!"

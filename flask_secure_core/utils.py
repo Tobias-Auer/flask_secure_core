@@ -5,6 +5,7 @@ This module contains utility functions for flask_secure_core.
 """
 from flask import make_response, redirect, abort, g
 import colorlogx.logger as colorlogx
+import DBMethodsPostgres
 
 logger = colorlogx.get_logger("utils")
 
@@ -64,6 +65,10 @@ class AuthDecoratorHelperFunctions:
         :param url: The URL that was requested.
         :return: Redirect response to the access denied page.
         """
+        
+        # TODO: implement a proper get preferences method
+        return "not implemented yet" 
+    
         logger.debug(f"Access denied for {request_path} with context {context} for user {g.get('user_uuid', None)}")
         match g.db_connection.preferences.get("permission_required_not_given_action"):
             case 0:

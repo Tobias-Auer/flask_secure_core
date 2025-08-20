@@ -45,3 +45,18 @@ class DBMethods:
         if self.__connection_manager:
             self.__connection_manager = None
 
+# TODO: This 👇
+class Preferences:
+    def __init__(self, connection_manager):
+        self.__connection_manager = connection_manager
+
+    def get(self, key, default=None):
+        # Placeholder for getting preferences from the database
+        ...
+    def set(self, key, value):
+        # Placeholder for setting preferences in the database
+        ...
+    
+    def close(self):
+        # Placeholder for closing any resources if needed
+        pass

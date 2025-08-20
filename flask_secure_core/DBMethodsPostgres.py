@@ -18,6 +18,14 @@ def db_error_handler(method):
             raise
     return wrapper
 
+def decorate_all_db_methods(cls):
+    blacklist = ["close"]
+    for attr_name, attr_value in cls.__dict__.items():
+        if callable(attr_value) and not attr_name.startswith("__") and attr_name not in blacklist:
+            setattr(cls, attr_name, db_error_handler(attr_value))
+    return cls
+
+@decorate_all_db_methods
 class DBMethods:
     def __init__(self, connection_manager):
         self.connection_manager = connection_manager

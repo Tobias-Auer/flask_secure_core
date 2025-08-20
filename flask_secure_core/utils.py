@@ -10,19 +10,21 @@ logger = colorlogx.get_logger("utils")
 
 
 class AuthDecoratorHelperFunctions:
-    def __init__(self, logger, db_handler):
+    def __init__(self, logger, connection_manager):
         logger = logger
-        self.db_handler = db_handler
+        self.connection_manager = connection_manager
 
     def before_processing(self):
-        self.init_db_cursor()
-        if not g.get("db_cursor", None):
+        self.init_db_obj()
+        if not g.get("db_obj", None):
             logger.error("No database connection available.")
             abort(500)
             
-    def init_db_cursor(self):
+    def init_db_obj(self):
         if "db_cursor" not in g:
-            g.db_cursor = self.db_handler.create_db_cursor()
+            g.db_obj = DBMethodsPostgres.DBMethods(self.connection_manager)
+            g.preferences = DBMethodsPostgres.Preferences(self.connection_manager)
+            # TODO: implement a proper get preferences class
         
     def validate_session(self):
         """
@@ -47,7 +49,7 @@ class AuthDecoratorHelperFunctions:
 
     def get_permission_level(self, user_id):
         if "user_access_level" not in g:
-            g.user_access_level = self.db_handler.get_access_permissions(g.db_cursor, user_id)
+            g.user_access_level = g.db_obj.get_access_permissions(user_id)
             if g.user_access_level is None:
                 logger.error(f"Database error!\nCould not determine access level for user {user_id}")
                 abort(500)

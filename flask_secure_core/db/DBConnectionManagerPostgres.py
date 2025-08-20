@@ -51,7 +51,7 @@ class DBConnectionManager:
         self.__cursor = self.__conn.cursor()
         self.__verify_db_integrity(recreate_db)
         self.__cursor.close()
-        self.__release_connection(self.__conn)
+        self.release_connection(self.__conn)
         
     def __verify_db_integrity(self, recreate_db):
         try:

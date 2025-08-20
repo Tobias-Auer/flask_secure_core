@@ -12,7 +12,7 @@ bp = Blueprint("core", __name__)
 def before_request():
     g.user_uuid = session.get("user_uuid", None)
 
-@bp.teardown_appcontext
+@bp.teardown_app_request
 def shutdown_session(exception=None):
     if hasattr(g, 'db_obj'):
         g.db_obj.close()

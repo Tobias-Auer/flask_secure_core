@@ -59,7 +59,7 @@ class DBConnectionManager:
             if self.__cursor.fetchone() is None:
                 logger.error("Database integrity check failed: No response from database.")
                 raise Exception("Database integrity check failed.")
-            if len(self.__get_all_tables(self.__cursor)) == 0 or recreate_db:
+            if len(self.__get_all_tables()) == 0 or recreate_db:
                 if not recreate_db: 
                     logger.error("Database integrity check failed: No tables found in the database. Initiating tables...") 
                 else: 
@@ -158,7 +158,7 @@ class DBConnectionManager:
             logger.error(f"Error getting connection from pool: {e}")
             raise
         
-    def __release_connection(self, conn):
+    def release_connection(self, conn):
         """
         Return a connection to the pool.
         """

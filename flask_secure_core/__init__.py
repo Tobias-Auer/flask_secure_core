@@ -8,7 +8,7 @@ def get_connection_manager():
     return _connection_manager
 
 def _init_app(app):
-    app.register_blueprint(bp)
+    app.register_blueprint(bp,  template_folder="templates")
 
 def init_fsl(app, db_type='postgres', db_name=None, db_user=None, db_password=None, db_host='localhost', db_port=5432, minconn=3, maxconn=10, recreate_db=False):
     global _connection_manager

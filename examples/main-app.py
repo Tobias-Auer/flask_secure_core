@@ -19,7 +19,7 @@ flask_secure_core.init_fsl(
 
 @app.route("/")
 def index():
-    return "Welcome to the Main Example App!"
+    return render_template("index.html")
 
 
 @app.route("/ex1")

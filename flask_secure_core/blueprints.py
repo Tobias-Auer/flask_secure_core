@@ -7,17 +7,18 @@ import os
 from jinja2 import ChoiceLoader, FileSystemLoader
 from flask import Blueprint, render_template, session, g
 
-bp = Blueprint("core", __name__)
-
+bp = Blueprint("FSL", __name__)
+PATH_PREFIX = "/FSL_._INTERN"
 
 lib_templates = os.path.join(os.path.dirname(__file__), "templates")
-
-# include library templates in the blueprint's jinja loader
+# add the library templates to the blueprint's jinja loader if not already set
 if not hasattr(bp, 'jinja_loader') or bp.jinja_loader is None:
     bp.jinja_loader = ChoiceLoader([
         FileSystemLoader(lib_templates),  # Library Templates
     ])
-    
+lib_static = os.path.join(os.path.dirname(__file__), "static")
+bp.static_folder = lib_static
+bp.static_url_path = PATH_PREFIX
 
 @bp.before_app_request
 def before_request():
@@ -36,8 +37,8 @@ def test_route():
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("login/login.html")
+    return render_template(f"{PATH_PREFIX}/login/login.html")
 
 @bp.route("/admin")
 def admin_panel():
-    return render_template("admin/admin.html")
+    return render_template(f"{PATH_PREFIX}/admin/admin.html")

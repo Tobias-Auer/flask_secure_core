@@ -5,9 +5,14 @@ This module contains Flask blueprints for core flask functions.
 """
 import os
 from jinja2 import ChoiceLoader, FileSystemLoader
-from flask import Blueprint, render_template, session, g
+from flask import Blueprint, render_template, session, g, request
+
+from . import utils
+from colorlogx import logger as lg
+from .get_conn import get_connection_manager
 
 bp = Blueprint("FSL", __name__)
+logger = lg.get_logger("blueprints")
 PATH_PREFIX = "/FSL_._INTERN"
 
 lib_templates = os.path.join(os.path.dirname(__file__), "templates")
@@ -37,6 +42,20 @@ def test_route():
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    data = None
+    if request.method == 'POST':
+        data = request.json
+    if data:
+        username = data["username"]
+        password = data["password"]
+        ADHF = utils.AuthDecoratorHelperFunctions(logger, get_connection_manager())
+
+        ADHF.init_db_obj()  # TODO: make this a decorator
+        if g.get("db_obj").authenticateAdmin(username, password):
+            session["username"] = username
+            return "ok", 200
+        else:
+            return "failed", 401
     return render_template(f"{PATH_PREFIX}/login/login.html")
 
 @bp.route("/admin")

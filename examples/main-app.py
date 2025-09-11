@@ -16,10 +16,12 @@ flask_secure_core.init_fsl(
     db_password="fsl"
 )
 
+app.config.from_pyfile('FlaskConfig.py')
+
 
 @app.route("/")
 def index():
-    return render_template("login/login.html")
+    return render_template("index.html")
 
 
 @app.route("/ex1")

@@ -15,13 +15,14 @@ class AuthDecorators:
         :param logger: Logger object for logging.
         """
         self.logger = logger
+        print("DECORATORS ARE INITED")
         self.helper = ADHF(logger, get_connection_manager())
 
     def require_login(self):
         def inner_decorator(f):
             @functools.wraps(f)
             def wrapped(*args, **kwargs):
-                self.helper.before_processing()
+                self.helper.init_db_obj()
                 if not self.helper.validate_session():
                     return self.helper.get_access_denied_page(request.path, "login")
                 return f(*args, **kwargs)
@@ -32,7 +33,7 @@ class AuthDecorators:
         def inner_decorator(f):
             @functools.wraps(f)
             def wrapped(*args, **kwargs):
-                self.helper.before_processing()
+                self.helper.init_db_obj()
                 if not self.helper.validate_session():
                     return self.helper.get_access_denied_page(request.path, "login")
 

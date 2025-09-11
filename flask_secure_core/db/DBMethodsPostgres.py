@@ -1,5 +1,5 @@
 import colorlogx.logger as colorlogx
-import DBConnectionManagerPostgres as db_conn_manager
+from flask_secure_core.db import DBConnectionManagerPostgres as db_conn_manager
 import functools
 
 
@@ -34,6 +34,9 @@ class DBMethods:
 
     def get_access_permissions(self, user_id):
         ...
+    
+    def authenticateAdmin(self, username, password):
+        return username == "admin" and password == "admin"
 
     def close(self):
         if self.__cursor:

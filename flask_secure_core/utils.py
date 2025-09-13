@@ -6,6 +6,11 @@ This module contains utility functions for flask_secure_core.
 from flask import make_response, redirect, abort, g
 import colorlogx.logger as colorlogx
 from flask_secure_core.db.DBMethodsPostgres import DBMethods as DBMethods_Postgres, Preferences as Preferences_Postgres
+
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+
+
 logger = colorlogx.get_logger("utils")
 
 
@@ -85,3 +90,12 @@ class AuthDecoratorHelperFunctions:
                 g.access_denied_code = 4
                 return redirect(g.db_connection.preferences.get(f"{context}_required_not_given_redirect_url"))
     
+ph = PasswordHasher(time_cost=5, memory_cost=65536, parallelism=4, hash_len=32)
+def hash_password(password: str) -> str:
+    return ph.hash(password)
+
+def verify_password(hash_encoded: str, password: str) -> bool:
+    try:
+        return ph.verify(hash_encoded, password)
+    except VerifyMismatchError:
+        return False

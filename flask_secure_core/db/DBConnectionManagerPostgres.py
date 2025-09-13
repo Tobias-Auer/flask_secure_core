@@ -8,7 +8,6 @@ from psycopg2.pool import ThreadedConnectionPool
 import time
 
 import colorlogx.logger as colorlogx
-
 logger = colorlogx.get_logger("DBConnectionManagerPostgres")
 
 def read_sql_file(filepath):
@@ -114,11 +113,16 @@ class DBConnectionManager:
         logger.debug(f"executing SQL query: {query}")
         try:
             self.__cursor.execute(query)
-            self.conn.commit()
+            self.__conn.commit()
+            from ..utils import hash_password
+            self.__cursor.execute("INSERT INTO fsl.users (username, password, access_level) VALUES (%s, %s, %s)",
+            ("admin", hash_password("admin"), 0))
+            self.__conn.commit()
+
             logger.info("Tables initiated successfully")
         except Exception as e:
             logger.error(f"Error creating tables: {e}")
-            self.conn.rollback()
+            self.__conn.rollback()
             return False
         return True
     
@@ -142,10 +146,10 @@ class DBConnectionManager:
             logger.debug(f"executing SQL query: {query}")
             self.__cursor.execute(query)
             logger.info("scheme fsl dropped")
-            self.conn.commit()
+            self.__conn.commit()
         except Exception as e:
             logger.error(f"Error dropping scheme fsl: {e}")
-            self.conn.rollback()
+            self.__conn.rollback()
 
 
     def __get_connection(self):

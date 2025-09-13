@@ -51,7 +51,7 @@ def login():
         ADHF = utils.AuthDecoratorHelperFunctions(logger, get_connection_manager())
 
         ADHF.init_db_obj()  # TODO: make this a decorator
-        if g.get("db_obj").authenticateAdmin(username, password):
+        if g.get("db_obj").authenticateUser(username, password):
             session["username"] = username
             return "ok", 200
         else:

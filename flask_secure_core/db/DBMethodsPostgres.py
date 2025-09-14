@@ -1,9 +1,8 @@
 import colorlogx.logger as colorlogx
-from flask_secure_core.db import DBConnectionManagerPostgres as db_conn_manager
 import functools
 
 
-logger = colorlogx.get_logger("DBConnectionManagerPostgres")
+logger = colorlogx.get_logger("DBMethodsPostgres")
 
 
 def db_error_handler(method):

@@ -8,10 +8,10 @@ def _init_app(app):
 
 def init_fsl(app, db_type='postgres', db_name=None, db_user=None, db_password=None,
              db_host='localhost', db_port=5432, minconn=3, maxconn=10, recreate_db=False):
-    from .db.DBConnectionManagerPostgres import DBConnectionManager
-    global _connection_manager   # <--- wichtig
+    global _connection_manager
 
     if db_type == 'postgres':
+        from .db.DBConnectionManagerPostgres import DBConnectionManager
         manager = DBConnectionManager(
             db_host=db_host,
             db_port=db_port,

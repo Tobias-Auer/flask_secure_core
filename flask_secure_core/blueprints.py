@@ -5,12 +5,10 @@ This module contains Flask blueprints for core flask functions.
 """
 import os
 from jinja2 import ChoiceLoader, FileSystemLoader
-from flask import Blueprint, render_template, session, g, request
+from flask import Blueprint, render_template, session, g, request, abort
 
-from . import utils
 from colorlogx import logger as lg
-from .get_conn import get_connection_manager
-
+from .db.postgres_prepare_g import init_db_obj
 bp = Blueprint("FSL", __name__)
 logger = lg.get_logger("blueprints")
 PATH_PREFIX = "/FSL_._INTERN"
@@ -48,9 +46,9 @@ def login():
     if data:
         username = data["username"]
         password = data["password"]
-        ADHF = utils.AuthDecoratorHelperFunctions(logger, get_connection_manager())
 
-        ADHF.init_db_obj()  # TODO: make this a decorator
+        if not init_db_obj(): # TODO: make this a decorator
+            abort(500)
         if g.get("db_obj").authenticateUser(username, password):
             session["username"] = username
             return "ok", 200

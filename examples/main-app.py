@@ -5,11 +5,11 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-import flask_secure_core
+import flask_secure_core as fsl
 
 app = Flask(__name__)
 
-flask_secure_core.init_fsl(
+fsl.init_fsl(
     app,
     db_name="fsl",
     db_user="fsl",
@@ -25,21 +25,24 @@ def index():
 
 
 @app.route("/ex1")
+@app.require_login()
+
 def example1():
     return "Only available when the user is logged in."
 
-
 @app.route("/ex2")
+@app.require_permission("2")
+
 def example2():
     return "Only available when the user has staff privileges."
 
-
 @app.route("/ex3")
+@app.require_permission("1")
 def example3():
     return "Only available when the user is an admin."
 
-
 @app.route("/ex4")
+@app.require_permission("0")
 def example4():
     return "Only available when the user is a superuser."
 

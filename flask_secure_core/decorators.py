@@ -9,7 +9,7 @@ import colorlogx
 from flask import request, g
 from . import get_connection_manager
 from flask_secure_core.db.DBMethodsPostgres import DBMethods as DBMethods_Postgres, Preferences as Preferences_Postgres
-from flask import make_response, redirect, abort, g
+from flask import make_response, redirect, abort, g, session
 from .db.postgres_prepare_g import init_db_obj
 
 
@@ -20,12 +20,14 @@ class AuthDecorators:
         """
         self.logger = colorlogx.get_logger("decorators")
 
-        self.helper = ADF(self.logger, get_connection_manager())
+        self.helper = ADF(self.logger)
+        self.logger.debug("AuthDecorators initialized.")
 
     def require_login(self):
         def inner_decorator(f):
             @functools.wraps(f)
             def wrapped(*args, **kwargs):
+                self.logger.debug("require_login decorator called.")
                 init_db_obj()
                 if not self.helper.validate_session():
                     return self.helper.get_access_denied_page(request.path, "login")
@@ -33,7 +35,7 @@ class AuthDecorators:
             return wrapped
         return inner_decorator
 
-    def require_permission_level(self, permission_level_required):
+    def require_permission(self, permission_level_required):
         def inner_decorator(f):
             @functools.wraps(f)
             def wrapped(*args, **kwargs):
@@ -62,7 +64,7 @@ class ADF: # Access Decorator Functions
         Validates the session by checking if the user is logged in.
         :return: True if the session is valid, False otherwise.
         """
-        return isinstance(g.get("user_uuid", None), str)
+        return isinstance(session.get("username"), str)
 
     def check_permission_level(self, required_permission_level):
         """
@@ -97,7 +99,7 @@ class ADF: # Access Decorator Functions
         """
         
         # TODO: implement a proper get preferences method
-        return "not implemented yet" 
+        return "DENIED!, not implemented yet" 
     
         logger.debug(f"Access denied for {request_path} with context {context} for user {g.get('user_uuid', None)}")
         match g.db_connection.preferences.get("permission_required_not_given_action"):

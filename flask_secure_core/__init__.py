@@ -1,9 +1,13 @@
 from .blueprints import bp
 from .get_conn import get_connection_manager, set_connection_manager
-
+from .decorators import AuthDecorators
 
 def _init_app(app):
     app.register_blueprint(bp, template_folder="templates")
+    authDecorators = AuthDecorators()
+    app.require_login = authDecorators.require_login
+    app.require_permission = authDecorators.require_permission
+
 
 
 def init_fsl(app, db_type='postgres', db_name=None, db_user=None, db_password=None,

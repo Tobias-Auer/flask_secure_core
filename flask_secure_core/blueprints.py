@@ -51,6 +51,7 @@ def login():
             abort(500)
         if g.get("db_obj").authenticateUser(username, password):
             session["username"] = username
+            session["user_uuid"] = g.db_obj.get_user_id_by_username(username)
             return "ok", 200
         else:
             return "failed", 401

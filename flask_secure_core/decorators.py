@@ -55,7 +55,7 @@ class AuthDecorators:
 
 class ADF: # Access Decorator Functions
     def __init__(self, logger):
-        logger = logger
+        self.logger = logger
         self.connection_manager = get_connection_manager()
 
         
@@ -75,21 +75,21 @@ class ADF: # Access Decorator Functions
         3 ==> User
         """
         
-        user_access_level = self.get_permission_level(g.get("user_uuid", None))
-        self.logger.debug(f"User {g.get('user_uuid', None)} has access permissions: {user_access_level}")
+        user_access_level = self.get_permission_level(session.get("user_uuid", None))
+        self.logger.debug(f"User {session.get('user_uuid', None)} has access permissions: {user_access_level}")
         self.logger.debug(f"Required permission level: {required_permission_level}")
         return user_access_level <= required_permission_level
 
     def get_permission_level(self, user_id):
         if "user_access_level" not in g:
-            g.user_access_level = g.db_obj.get_access_permissions(user_id)
+            g.user_access_level = g.db_obj.get_access_permissions_by_id(user_id)
             if g.user_access_level is None:
                 self.logger.error(f"Database error!\nCould not determine access level for user {user_id}")
                 abort(500)
         return g.user_access_level
 
-    def permission_is_sufficient(self, user_level, required_level):
-        return user_level <= required_level
+    def is_permission_sufficient(self, user_level, required_level):
+        return int(user_level) <= int(required_level)
     
     def get_access_denied_page(self, request_path, context):
         """

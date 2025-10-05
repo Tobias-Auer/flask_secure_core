@@ -75,6 +75,17 @@ class DBMethods:
         )
         self.__conn.commit()
         return self.__cursor.lastrowid
+    
+    def get_user_id_by_username(self, username):
+        self.__cursor.execute(
+            "SELECT id FROM fsl.users WHERE username = %s", (username,)
+        )
+        result = self.__cursor.fetchone()
+        if result is None:
+            self.logger.error(f"Could not find user ID for username: {username}")
+            return None
+        return result[0]
+    
         
 
     

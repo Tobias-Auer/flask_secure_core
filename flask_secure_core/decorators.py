@@ -7,7 +7,6 @@ This module contains decorators for Flask applications to handle authentication 
 import functools
 import colorlogx
 from flask import request, g
-from . import get_connection_manager
 from flask_secure_core.db.DBMethodsPostgres import DBMethods as DBMethods_Postgres, Preferences as Preferences_Postgres
 from flask import make_response, redirect, abort, g, session
 from .db.postgres_prepare_g import init_db_obj
@@ -56,7 +55,6 @@ class AuthDecorators:
 class ADF: # Access Decorator Functions
     def __init__(self, logger):
         self.logger = logger
-        self.connection_manager = get_connection_manager()
 
         
     def validate_session(self):

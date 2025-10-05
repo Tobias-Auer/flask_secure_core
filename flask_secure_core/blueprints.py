@@ -6,6 +6,8 @@ This module contains Flask blueprints for core flask functions.
 import os
 from jinja2 import ChoiceLoader, FileSystemLoader
 from flask import Blueprint, render_template, session, g, request, abort
+from .decorators import AuthDecorators
+fslDec = AuthDecorators()
 
 from colorlogx import logger as lg
 from .db.postgres_prepare_g import init_db_obj
@@ -58,5 +60,6 @@ def login():
     return render_template(f"{PATH_PREFIX}/login/login.html")
 
 @bp.route("/admin")
+@fslDec.require_permission("1")
 def admin_panel():
     return render_template(f"{PATH_PREFIX}/admin/admin.html")

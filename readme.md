@@ -1,10 +1,10 @@
-# flask-secure-core
+# flask-secure-login
 
 > ⚠️ **Hinweis:** Dieses Projekt befindet sich aktuell in der **Entwicklungsphase**.  
 > Viele Funktionen sind noch nicht vollständig implementiert und können sich ändern.  
-> Die Nutzung erfolgt auf eigene Verantwortung. Feedback und Mitarbeit sind willkommen!
+> Die Nutzung erfolgt auf eigene Verantwortung. Feedback ist willkommen!
 
-**`flask-secure-core`** ist eine modulare Flask-Library zur schnellen Integration von User-Login, Rechteverwaltung und Admin-UI in deine Flask-Projekte.
+**`flask-secure-login`** ist eine modulare Flask-Library zur schnellen Integration von User-Login, Rechteverwaltung und Admin-UI in deine Flask-Projekte.
 
 ---
 
@@ -13,11 +13,10 @@
 - 🔐 Benutzer-Authentifizierung (Login, Logout, Registrierung, Passwort ändern)
 - 🛡️ Zugriffskontrolle mit `@secure(<accessLevel>)` Decorator
 - 🗂️ Admin-Panel mit Nutzerübersicht, Rollenverwaltung, Passwortänderung und Benutzerverwaltung
-- ⚙️ Konfigurierbare Einstellungen über eine Web-Oberfläche (`/adminConfig`)
+- ⚙️ Konfigurierbare Einstellungen über eine Web-Oberfläche
 - 🗃️ Flexible Datenbankwahl:
   - Eigene SQLite-Datei
   - Bestehende PostgreSQL-Datenbank
-  - Bestehende MySQL/MariaDB-Datenbank
 - 🎨 Anpassbare Templates und Webpfade
 - 🔒 Sicherheit per Default (CSRF, Hashing, Session-Control)
 
@@ -26,41 +25,11 @@
 ## ⚙️ Installation
 
 ```bash
-pip install flask-secure-core
+pip install flask-secure-login
 ```
 
 ---
 
-## 🚀 Schnellstart
-
-```python
-from flask import Flask
-import flask_secure_core as flsec
-
-app = Flask(__name__)
-flsec.init_app(
-    app,
-    db_type="sqlite",         # "sqlite", "postgresql" oder "mysql"
-    db_path="users.db"        # Nur bei SQLite notwendig
-)
-
-app.run()
-```
-
----
-
-## 🔧 Zugriffskontrolle per Decorator
-
-```python
-@flsec.secure("admin")
-@app.route("/admin/dashboard")
-def dashboard():
-    return "Nur Admins dürfen das sehen"
-```
-
-Zugriffslevel sind vollständig konfigurierbar.
-
----
 
 ## 🔐 Benutzerrollen
 
@@ -74,13 +43,11 @@ Eigene Rollen und Hierarchien können in der Admin-Konfiguration oder per Code d
 
 ---
 
-## 🛠️ Admin-Konfigurationsseite (`/adminConfig`)
+## 🛠️ Admin-Konfigurationsseite
 
 - Aktivieren/Deaktivieren der Registrierung
-- Template-Auswahl (z. B. Light/Dark Themes, eigene HTML-Dateien)
-- Auswahl des Hashing-Algorithmus (`bcrypt`, `argon2`, `pbkdf2`)
 - Freie Konfiguration der internen Routen wie `/admin`, `/login`, `/register`, etc.
-- Weitere Lib-spezifische Optionen (API aktivieren, Rate-Limit setzen, etc.)
+- viele Einstellungen bezüglich des Login verhaltens
 
 ---
 
@@ -91,19 +58,6 @@ Eigene Rollen und Hierarchien können in der Admin-Konfiguration oder per Code d
 - Neue Nutzer erstellen
 - Rollen verwalten
 - Letzter Login und Account-Aktivität anzeigen
-
----
-
-## 🧩 Optional: REST-API Endpunkte
-
-Diese können in der Konfiguration aktiviert werden:
-
-- `POST /api/login`
-- `POST /api/logout`
-- `POST /api/register`
-- `GET  /api/userinfo`
-
-Antworten im JSON-Format – ideal für SPAs oder mobile Clients.
 
 ---
 

@@ -5,7 +5,7 @@ This module contains Flask blueprints for core flask functions.
 """
 import os
 from jinja2 import ChoiceLoader, FileSystemLoader
-from flask import Blueprint, render_template, session, g, request, abort
+from flask import Blueprint, jsonify, render_template, session, g, request, abort
 from .decorators import AuthDecorators
 fslDec = AuthDecorators()
 
@@ -63,3 +63,61 @@ def login():
 @fslDec.require_permission("1")
 def admin_panel():
     return render_template(f"{PATH_PREFIX}/admin/admin.html")
+
+@bp.route("/admin/users")
+@fslDec.require_permission("1")
+def admin_users():
+    return render_template(f"{PATH_PREFIX}/admin/admin_users.html")
+
+@bp.route("/admin/api/users")
+@fslDec.require_permission("1")
+def admin_users_api():
+    return g.get("db_obj").get_all_user_data_in_json(), 200
+
+@bp.route("/admin/api/users", methods=["POST"])
+@fslDec.require_permission("1")
+def admin_users_api_post():
+    data = request.get_json()
+    print(data)
+    if not data:
+        return jsonify({"error": "Missing JSON data"}), 400
+
+    try:
+        print("try to exec")
+        g.get("db_obj").create_user(
+            username=data["username"],
+            display_name=data.get("display_name"),
+            password=data["password"],
+            access_level=data.get("role", 3),
+            is_active=True if data.get("status", True) == "Enabled" else False,
+        )
+        return jsonify({"message": "User added"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@bp.route("/admin/api/users/<username>", methods=["PUT"])
+@fslDec.require_permission("1")
+def admin_users_api_put(username):
+    return jsonify({"message": "Not implemented"}), 501
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Missing JSON data"}), 400
+
+    try:
+        g.get("db_obj").update_user(
+            username=username,
+            new_username=data.get("username"),
+            display_name=data.get("display_name"),
+            password=data.get("password"),
+            access_level=data.get("access_level"),
+            is_active=data.get("is_active"),
+        )
+        return jsonify({"message": "User updated"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+

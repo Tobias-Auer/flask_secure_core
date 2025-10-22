@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Management</title>
+  <link rel="stylesheet" href="{{ url_for('FSL.static', filename='FSL_._INTERN/css/admin/admin_users.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>User Management</h1>
+      <div class="stats">
+        <div class="card">
+          <h3>Total Users</h3>
+          <p id="totalUsers">0</p>
+        </div>
+        <div class="card">
+          <h3>Active Users</h3>
+          <p id="activeUsers">0</p>
+        </div>
+        <div class="card">
+          <h3>Admins</h3>
+          <p id="admins">0</p>
+        </div>
+        <div class="card">
+          <h3>Disabled</h3>
+          <p id="disabled">0</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="actions">
+      <input type="text" id="search" placeholder="Search by name, username, or email">
+      <select id="roleFilter">
+        <option value="">All Roles</option>
+        <option value="Administrator">Administrator</option>
+        <option value="Editor">Editor</option>
+        <option value="Viewer">Viewer</option>
+      </select>
+      <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="Enabled">Enabled</option>
+        <option value="Disabled">Disabled</option>
+      </select>
+      <button id="addUserBtn">+ Add User</button>
+    </div>
+
+    <div class="table-container">
+      <table id="userTable">
+        <thead>
+          <tr>
+            <th data-sort="name">Full Name</th>
+            <th data-sort="username">Username</th>
+            <th data-sort="email">Email</th>
+            <th data-sort="role">Role</th>
+            <th data-sort="status">Status</th>
+            <th data-sort="lastLogin">Last Login</th>
+            <th data-sort="created">Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button id="prevPage">Previous</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage">Next</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Edit User</h2>
+      <form id="userForm">
+        <label>Full Name</label>
+        <input type="text" id="fullName">
+
+        <label>Username *</label>
+        <input type="text" id="username" required>
+
+        <label>Password</label>
+        <input type="password" id="pwd">
+
+        <label>Email Address</label>
+        <input type="email" id="email">
+
+        <label>Permission Level *</label>
+        <select id="permission"> <-- TODO: dynamic permission system -->
+          <option value="Administrator">Admin - Full Access</option>
+          <option value="Editor">Editor - Limited Access</option>
+          <option value="Viewer">Viewer - Read Only</option>
+        </select>
+
+        <label>Account Status</label>
+        <select id="state">
+          <option value="Enabled">Enabled</option>
+          <option value="Disabled">Disabled</option>
+        </select>
+
+        <div class="modal-buttons">
+          <button type="button" id="cancelBtn">Cancel</button>
+          <button type="submit" id="saveBtn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{{ url_for('FSL.static', filename='FSL_._INTERN/js/admin/admin_users.js') }}"></script>
+</body>
+</html>

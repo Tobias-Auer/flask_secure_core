@@ -114,9 +114,14 @@ class DBConnectionManager:
         try:
             self.__cursor.execute(query)
             self.__conn.commit()
+            logger.info("Database schema fsl created successfully.")
             from ..utils import hash_password
+            self.__cursor.execute("INSERT INTO fsl.access_level_info (prio, display_name, descr, color) VALUES (%s, %s,%s, %s)",
+            (0, "Administrator", "Full access to all system features and settings.", "#FF0000"))
+            self.__conn.commit()
+
             self.__cursor.execute("INSERT INTO fsl.users (username, password, access_level) VALUES (%s, %s, %s)",
-            ("admin", hash_password("admin"), 0))
+            ("admin", hash_password("admin"), 1))
             self.__conn.commit()
 
             logger.info("Tables initiated successfully")

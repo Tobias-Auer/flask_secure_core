@@ -6,6 +6,7 @@ CREATE TABLE fsl.users(
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   username text NOT NULL UNIQUE,
   display_name text,
+  email text UNIQUE,
   "password" text NOT NULL,
   access_level integer NOT NULL DEFAULT 3,
   last_login timestamp,

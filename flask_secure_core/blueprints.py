@@ -52,6 +52,7 @@ def login():
         if not init_db_obj(): # TODO: make this a decorator
             abort(500)
         if g.get("db_obj").authenticateUser(username, password):
+            g.get("db_obj").update_last_login_time(username)
             session["username"] = username
             session["user_uuid"] = g.db_obj.get_user_id_by_username(username)
             return "ok", 200
@@ -95,11 +96,19 @@ def admin_users_api_post():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@bp.route("/admin/api/users/<username>", methods=["DELETE"])
+@fslDec.require_permission("1")
+def admin_users_api_delete(username):
+    try:
+        g.get("db_obj").delete_user(username=username)
+        return jsonify({"message": "User deleted"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 @bp.route("/admin/api/users/<username>", methods=["PUT"])
 @fslDec.require_permission("1")
 def admin_users_api_put(username):
-    return jsonify({"message": "Not implemented"}), 501
     data = request.get_json()
     if not data:
         return jsonify({"error": "Missing JSON data"}), 400
@@ -109,9 +118,10 @@ def admin_users_api_put(username):
             username=username,
             new_username=data.get("username"),
             display_name=data.get("display_name"),
+            email=data.get("email"),
             password=data.get("password"),
             access_level=data.get("access_level"),
-            is_active=data.get("is_active"),
+            is_active=True if data.get("status") == "Enabled" else False,
         )
         return jsonify({"message": "User updated"}), 200
     except Exception as e:

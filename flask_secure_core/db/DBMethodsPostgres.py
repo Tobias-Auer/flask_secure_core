@@ -40,7 +40,7 @@ class DBMethods:
 
     def get_access_permissions_by_id(self, user_id):
         self.__cursor.execute(
-            "SELECT access_level FROM fsl.users WHERE id = %s", (user_id,)
+            "SELECT access_level FROM fsl.users WHERE id = %s and is_active=true", (user_id,)
         )
         result = self.__cursor.fetchone()
         if result is None:
@@ -49,7 +49,7 @@ class DBMethods:
 
     def get_access_permission_by_username(self, username):
         self.__cursor.execute(
-            "SELECT access_level FROM fsl.users WHERE username = %s", (username,)
+            "SELECT access_level FROM fsl.users WHERE username = %s and is_active=true", (username,)
         )
         result = self.__cursor.fetchone()
         if result is None:
@@ -66,7 +66,7 @@ class DBMethods:
         Return True if the username and password are correct, False otherwise.
         """
         self.__cursor.execute(
-            "SELECT password FROM fsl.users WHERE username = %s", (username,)
+            "SELECT password FROM fsl.users WHERE username = %s AND is_active = true", (username,)
         )
         result = self.__cursor.fetchone()
         if result is None:
@@ -103,7 +103,8 @@ class DBMethods:
                 a.display_name AS role,
                 u.last_login,
                 u.created_at,
-                u.is_active
+                u.is_active,
+                u.email
                 FROM fsl.users AS u
                 LEFT JOIN fsl.access_level_info AS a
                 ON u.access_level = a.id;
@@ -119,7 +120,7 @@ class DBMethods:
                 "lastLogin": row[3].strftime("%H:%M, %d.%m.%Y") if row[3] else None,
                 "created": row[4].strftime("%H:%M, %d.%m.%Y") if row[4] else None,
                 "status": "Enabled" if row[5] else "Disabled",
-                "email": "no@db.entry",
+                "email": row[6] if row[6] else "-",
             }
             users.append(user)
         # return json.dumps(users)
@@ -163,6 +164,63 @@ class DBMethods:
             self.__conn = None
         if self.__connection_manager:
             self.__connection_manager = None
+    
+    def delete_user(self, username):
+        self.__cursor.execute(
+            "DELETE FROM fsl.users WHERE username = %s", (username,)
+        )
+        if self.__cursor.rowcount == 0:
+            raise ValueError(f"User '{username}' does not exist.")
+        self.__conn.commit()
+        
+    def update_last_login_time(self, username):
+        self.__cursor.execute(
+            "UPDATE fsl.users SET last_login = NOW() WHERE username = %s", (username,)
+        )
+        self.__conn.commit()
+        
+    def update_user(
+        self,
+        username,
+        new_username=None,
+        display_name=None,
+        email=None,
+        password=None,
+        access_level=None,
+        is_active=None,
+    ):
+        updates = []
+        params = []
+
+        if new_username is not None:
+            updates.append("username = %s")
+            params.append(new_username)
+        if display_name is not None:
+            updates.append("display_name = %s")
+            params.append(display_name)
+        if email is not None:
+            updates.append("email = %s")
+            params.append(email)
+        if password is not None and password != "":
+            from ..utils import hash_password
+
+            hashed_password = hash_password(password)
+            updates.append("password = %s")
+            params.append(hashed_password)
+        if access_level is not None:
+            updates.append("access_level = %s")
+            params.append(access_level)
+        if is_active is not None:
+            updates.append("is_active = %s")
+            params.append(is_active)
+
+        if not updates:
+            return  # Nothing to update
+
+        params.append(username)
+        sql = f"UPDATE fsl.users SET {', '.join(updates)} WHERE username = %s"
+        self.__cursor.execute(sql, tuple(params))
+        self.__conn.commit()
 
 
 # TODO: This 👇

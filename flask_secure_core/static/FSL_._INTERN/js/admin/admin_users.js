@@ -218,6 +218,14 @@ function editUser(index) {
 
 function deleteUser(index) {
   if (confirm("Delete this user?")) {
+    fetch(`/admin/api/users/${users[index].username}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (!response.ok)
+          alert("Error deleting user:<br>" + response.error);
+      })
+      .catch((error) => console.error("Error deleting user:", error));
     users.splice(index, 1);
     renderUsers();
   }
